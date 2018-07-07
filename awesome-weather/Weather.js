@@ -1,26 +1,60 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo";
+import { Ionicons } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 
-export default class Weather extends Component {
-  render() {
-    return (
-      <LinearGradient
-        colors={['#00C6FB', '#00669B']}
-        style={styles.container}
-      >
-        <View style={styles.upper}>
-          <Text>Icon</Text>
-          <Text style={styles.temp}>35°C</Text>
-        </View>
-        <View style={styles.lower}>
-          <Text style={styles.title}>Raining</Text>
-          <Text style={styles.subtitle}>For more info look outside</Text>
-        </View>
-      </LinearGradient>
-    );
+const weatherCases = {
+  Rain: {
+    colors: ['#00C6FB', '#005BEA'],
+    title: 'Raining',
+    subtitle: 'For more info look outside',
+    icon: 'ios-rainy'
+  },
+  Clear: {
+    colors: ['#FEF253', '#FF7300'],
+    title: 'Sunny',
+    subtitle: 'For more info look outside',
+    icon: 'ios-sunny'
+  },
+  Thunderstorm: {
+    colors: ['#00ECBC', '#007ADF'],
+    title: 'Thunderstorm',
+    subtitle: 'For more info look outside',
+    icon: 'ios-thunderstorm'
+  },
+  Clouds: {
+    colors: ['#D7D2CC', '#304352'],
+    title: 'Cloudy',
+    subtitle: 'For more info look outside',
+    icon: 'ios-cloudy'
   }
 }
+
+function Weather({temp, name}) {
+  return (
+    <LinearGradient
+      colors={['#00C6FB', '#00669B']}
+      style={styles.container}
+    >
+      <View style={styles.upper}>
+        <Ionicons color='white' size={100} name={weatherCases[name].icon} />
+        <Text style={styles.temp}>{temp}°C</Text>
+      </View>
+      <View style={styles.lower}>
+        <Text style={styles.title}>{weatherCases[name].title}</Text>
+        <Text style={styles.subtitle}>{weatherCases[name].subtitle}</Text>
+      </View>
+    </LinearGradient>
+  )
+}
+
+Weather.propTypes = {
+  temp: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired
+}
+
+export default Weather;
 
 const styles = StyleSheet.create({
   container: {
