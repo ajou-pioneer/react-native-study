@@ -1,12 +1,16 @@
 import React from 'react';
 import { StatusBar, StyleSheet, Text, View, Dimensions, Platform, TextInput, ScrollView } from 'react-native';
+import { AppLoading } from 'expo';
 import ToDo from './ToDo';
+import uuidvl from 'uuid';
 
 const { height, width } = Dimensions.get('window');
 
 export default class App extends React.Component {
   state = {
     newTodo: '',
+    loadedTodo: false,
+    todos: {}
   };
 
   handleNewTodo = (text) => {
@@ -15,17 +19,78 @@ export default class App extends React.Component {
     });
   };
 
-  render() {
+  loadTodo = () => {
+    this.setState({
+      loadedTodo: true,
+    })
+  }
+
+  addTodo = () => {
     const { newTodo } = this.state;
+
+    if (newTodo !== '') {
+      this.setState({
+        newTodo: '',
+      });
+
+      this.setState((prevState) => {
+        const id = uuidvl();
+
+        const newTodoObject = {
+          [id]: {
+            id: id,
+            iscompleted: false,
+            text: newTodo,
+            createdAt: Date.now(),
+          }
+        };
+
+        const newState = {
+          ...prevState,
+          newTodo: '',
+          todos: {
+            ...prevState.todos,
+            ...newTodoObject
+          }
+        }
+
+        return { ...newState };
+      });
+    }
+  }
+
+  deleteTodo = (id) => {
+    this.setState(prevState => {
+      const todos = prevState.todos;
+      delete todos[id];
+      const newState = {
+        ...prevState,
+        ...todos
+      }
+
+      return { ...newState };
+    })
+  }
+
+  componentDidMount = () => {
+    this.loadTodo();
+  }
+
+  render() {
+    const { newTodo, loadedTodo, todos } = this.state;
+
+    if (!loadedTodo) {
+      return <AppLoading />;
+    }
 
     return (
       <View style={styles.container}>
         <StatusBar barStyle='light-content' />
         <Text style={styles.title}>Awesome Todo</Text>
         <View style={styles.card}>
-          <TextInput style={styles.input} placeholder={'New Todo'} value={newTodo} onChangeText={this.handleNewTodo} returnKeyType={'done'} />
+          <TextInput style={styles.input} placeholder={'New Todo'} value={newTodo} onChangeText={this.handleNewTodo} returnKeyType={'done'} onSubmitEditing={this.addTodo} />
           <ScrollView contentContainerStyle={styles.todo}>
-            <ToDo />
+            {Object.values(todos).map((todo) => <ToDo key={todo.id} {...todo} deleteTodo={this.deleteTodo}/>)}
           </ScrollView>
         </View>
       </View>

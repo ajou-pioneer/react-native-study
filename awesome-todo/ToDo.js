@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
+import PropTypes from 'prop-types';
 
 const { width, height } = Dimensions.get('window');
 
 export default class ToDo extends React.Component {
-  state = {
-    isEditing: false,
-    isCompleted: false,
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditing: false,
+      todoValue: props.text
+    }
+  }
+  static propTypes = {
+    text: PropTypes.string.isRequired,
+    isCompleted: PropTypes.bool.isRequired,
+    deleteTodo: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
   };
 
   toggleComplete = () => {
@@ -20,33 +30,54 @@ export default class ToDo extends React.Component {
   startEditing = () => {
     this.setState({
       isEditing: true,
-    })
+    });
   }
 
   finishEditing = () => {
     this.setState({
       isEditing: false,
-    })
+    });
+  }
+
+  controllInput = (text) => {
+    this.setState({
+      todoValue: text,
+    });
   }
 
   render() {
-    const { isEditing, isCompleted } = this.state;
+    const { isEditing, isCompleted, todoValue } = this.state;
+    const { text, id, deleteTodo } = this.props;
+
     return (
       <View style={styles.container}>
         <View style={styles.column}>
           <TouchableOpacity onPress={this.toggleComplete}>
             <View style={[styles.circle, isCompleted ? styles.completedCircle : styles.uncompletedCircle]} />
           </TouchableOpacity>
-          <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>Lorem Ipsum</Text>
+            {isEditing ? (
+                <TextInput style={[styles.input, styles.text, isCompleted ? (
+                  styles.completedText
+                ) : (
+                  styles.uncompletedText
+                )]} value={todoValue} multiline={true} onChangeText={this.controllInput} returnKeyType={'done'} onBlur={this.finishEditing}/>
+            ) : (
+              <Text style={[styles.text,
+              isCompleted ? (
+                styles.completedText
+              ) : (
+                  styles.uncompletedText
+                )]}>{text}</Text>
+            )}
         </View>
         {isEditing ? (
-          <View style={styles.actions}>
-            <TouchableOpacity onPressOut={this.finishEditing}>
-              <View style={styles.actionContainer}>
-                <Text style={styles.actionText}>✔️</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.actions}>
+              <TouchableOpacity onPressOut={this.finishEditing}>
+                <View style={styles.actionContainer}>
+                  <Text style={styles.actionText}>✔️</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
         ) : (
             <View style={styles.actions}>
               <TouchableOpacity onPressOut={this.startEditing}>
@@ -54,7 +85,7 @@ export default class ToDo extends React.Component {
                   <Text style={styles.actionText}>✏️</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPressOut={() => deleteTodo(id)}>
                 <View style={styles.actionContainer}>
                   <Text style={styles.actionText}>❌</Text>
                 </View>
@@ -106,7 +137,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: width / 2,
-    justifyContent: 'space-between',
   },
   actions: {
     flexDirection: 'row',
@@ -114,5 +144,9 @@ const styles = StyleSheet.create({
   actionContainer: {
     marginVertical: 10,
     marginHorizontal: 10,
+  },
+  input: {
+    marginVertical: 15,
+    width: width / 2,
   }
 });
