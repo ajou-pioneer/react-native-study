@@ -158,7 +158,7 @@ export default class App extends React.Component {
         <View style={styles.card}>
           <TextInput style={styles.input} placeholder={'New Todo'} value={newTodo} onChangeText={this.handleNewTodo} returnKeyType={'done'} onSubmitEditing={this.addTodo} />
           <ScrollView contentContainerStyle={styles.todo}>
-            {Object.values(todos).map((todo) =>
+            {Object.values(todos).reverse().map((todo) =>
               <ToDo
                 key={todo.id}
                 deleteTodo={this.deleteTodo}
