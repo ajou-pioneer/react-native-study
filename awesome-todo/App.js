@@ -60,7 +60,7 @@ export default class App extends React.Component {
   }
 
   deleteTodo = (id) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const todos = prevState.todos;
       delete todos[id];
       const newState = {
@@ -73,7 +73,7 @@ export default class App extends React.Component {
   }
 
   uncompleteTodo = (id) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const newState = {
         ...prevState,
         todos: {
@@ -89,7 +89,7 @@ export default class App extends React.Component {
   }
 
   completeTodo = (id) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const newState = {
         ...prevState,
         todos: {
@@ -100,6 +100,22 @@ export default class App extends React.Component {
           }
         }
       }
+      return { ...newState };
+    });
+  }
+
+  updateTodo = (id, text) => {
+    this.setState((prevState) => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            text: text
+          }
+        }
+      };
       return { ...newState };
     });
   }
@@ -122,7 +138,16 @@ export default class App extends React.Component {
         <View style={styles.card}>
           <TextInput style={styles.input} placeholder={'New Todo'} value={newTodo} onChangeText={this.handleNewTodo} returnKeyType={'done'} onSubmitEditing={this.addTodo} />
           <ScrollView contentContainerStyle={styles.todo}>
-            {Object.values(todos).map((todo) => <ToDo key={todo.id} {...todo} deleteTodo={this.deleteTodo} uncompleteTodo={this.uncompleteTodo} completeTodo={this.completeTodo} {...todo} />)}
+            {Object.values(todos).map((todo) =>
+              <ToDo
+                key={todo.id}
+                deleteTodo={this.deleteTodo}
+                uncompleteTodo={this.uncompleteTodo}
+                completeTodo={this.completeTodo}
+                updateTodo={this.updateTodo}
+                {...todo}
+              />
+            )}
           </ScrollView>
         </View>
       </View>
