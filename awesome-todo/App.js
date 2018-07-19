@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet, Text, View, Dimensions, Platform, TextInput, ScrollView } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, Dimensions, Platform, TextInput, ScrollView, AsyncStorage } from 'react-native';
 import { AppLoading } from 'expo';
 import ToDo from './ToDo';
 import uuidvl from 'uuid';
@@ -19,11 +19,19 @@ export default class App extends React.Component {
     });
   };
 
-  loadTodo = () => {
-    this.setState({
-      loadedTodo: true,
-    })
-  }
+  loadTodo = async () => {
+    try {
+      const todos = await AsyncStorage.getItem('todos');
+      const parsedTodos = JSON.parse(todos);
+
+      this.setState({
+        loadedTodo: true,
+        todos: parsedTodos || {},
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   addTodo = () => {
     const { newTodo } = this.state;
@@ -52,12 +60,13 @@ export default class App extends React.Component {
             ...prevState.todos,
             ...newTodoObject
           }
-        }
+        };
 
+        this.saveTodos(newState.todos);
         return { ...newState };
       });
     }
-  }
+  };
 
   deleteTodo = (id) => {
     this.setState((prevState) => {
@@ -66,11 +75,12 @@ export default class App extends React.Component {
       const newState = {
         ...prevState,
         ...todos
-      }
+      };
 
+      this.saveTodos(newState.todos);
       return { ...newState };
     })
-  }
+  };
 
   uncompleteTodo = (id) => {
     this.setState((prevState) => {
@@ -83,10 +93,12 @@ export default class App extends React.Component {
             isCompleted: false,
           }
         }
-      }
+      };
+
+      this.saveTodos(newState.todos);
       return { ...newState };
     });
-  }
+  };
 
   completeTodo = (id) => {
     this.setState((prevState) => {
@@ -99,10 +111,12 @@ export default class App extends React.Component {
             isCompleted: true,
           }
         }
-      }
+      };
+
+      this.saveTodos(newState.todos);
       return { ...newState };
     });
-  }
+  };
 
   updateTodo = (id, text) => {
     this.setState((prevState) => {
@@ -116,13 +130,19 @@ export default class App extends React.Component {
           }
         }
       };
+
+      this.saveTodos(newState.todos);
       return { ...newState };
     });
-  }
+  };
+
+  saveTodos = (newTodos) => {
+    const satveTodo = AsyncStorage.setItem('todos', JSON.stringify(newTodos));
+  };
 
   componentDidMount = () => {
     this.loadTodo();
-  }
+  };
 
   render() {
     const { newTodo, loadedTodo, todos } = this.state;
@@ -152,7 +172,7 @@ export default class App extends React.Component {
         </View>
       </View>
     );
-  }
+  };
 }
 
 const styles = StyleSheet.create({
