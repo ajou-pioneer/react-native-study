@@ -23,7 +23,10 @@ export default class ToDo extends React.Component {
   };
 
   toggleComplete = () => {
+    event.stopPropagation();
+
     const { isCompleted, uncompleteTodo, completeTodo, id } = this.props;
+
     if (isCompleted) {
       uncompleteTodo(id);
     } else {
@@ -32,12 +35,16 @@ export default class ToDo extends React.Component {
   };
 
   startEditing = () => {
+    event.stopPropagation();
+
     this.setState({
       isEditing: true,
     });
   };
 
   finishEditing = () => {
+    event.stopPropagation();
+
     const {todoValue} = this.state;
     const {id, updateTodo} = this.props;
 
@@ -93,7 +100,7 @@ export default class ToDo extends React.Component {
                   <Text style={styles.actionText}>✏️</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPressOut={() => deleteTodo(id)}>
+              <TouchableOpacity onPressOut={(event) => {event.stopPropagation; deleteTodo(id)}}>
                 <View style={styles.actionContainer}>
                   <Text style={styles.actionText}>❌</Text>
                 </View>
