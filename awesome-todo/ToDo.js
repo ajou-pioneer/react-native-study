@@ -17,14 +17,17 @@ export default class ToDo extends React.Component {
     isCompleted: PropTypes.bool.isRequired,
     deleteTodo: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
+    uncompleteTodo: PropTypes.func.isRequired,
+    completeTodo: PropTypes.func.isRequired,
   };
 
   toggleComplete = () => {
-    this.setState((prevState) => {
-      return ({
-        isCompleted: !prevState.isCompleted
-      });
-    })
+    const { isCompleted, uncompleteTodo, completeTodo, id } = this.props;
+    if (isCompleted) {
+      uncompleteTodo(id);
+    } else {
+      completeTodo(id);
+    }
   }
 
   startEditing = () => {
@@ -46,8 +49,8 @@ export default class ToDo extends React.Component {
   }
 
   render() {
-    const { isEditing, isCompleted, todoValue } = this.state;
-    const { text, id, deleteTodo } = this.props;
+    const { isEditing, todoValue } = this.state;
+    const { text, id, deleteTodo, isCompleted } = this.props;
 
     return (
       <View style={styles.container}>
@@ -55,13 +58,13 @@ export default class ToDo extends React.Component {
           <TouchableOpacity onPress={this.toggleComplete}>
             <View style={[styles.circle, isCompleted ? styles.completedCircle : styles.uncompletedCircle]} />
           </TouchableOpacity>
-            {isEditing ? (
-                <TextInput style={[styles.input, styles.text, isCompleted ? (
-                  styles.completedText
-                ) : (
-                  styles.uncompletedText
-                )]} value={todoValue} multiline={true} onChangeText={this.controllInput} returnKeyType={'done'} onBlur={this.finishEditing}/>
+          {isEditing ? (
+            <TextInput style={[styles.input, styles.text, isCompleted ? (
+              styles.completedText
             ) : (
+                styles.uncompletedText
+              )]} value={todoValue} multiline={true} onChangeText={this.controllInput} returnKeyType={'done'} onBlur={this.finishEditing} />
+          ) : (
               <Text style={[styles.text,
               isCompleted ? (
                 styles.completedText
@@ -71,13 +74,13 @@ export default class ToDo extends React.Component {
             )}
         </View>
         {isEditing ? (
-            <View style={styles.actions}>
-              <TouchableOpacity onPressOut={this.finishEditing}>
-                <View style={styles.actionContainer}>
-                  <Text style={styles.actionText}>✔️</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.actions}>
+            <TouchableOpacity onPressOut={this.finishEditing}>
+              <View style={styles.actionContainer}>
+                <Text style={styles.actionText}>✔️</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         ) : (
             <View style={styles.actions}>
               <TouchableOpacity onPressOut={this.startEditing}>

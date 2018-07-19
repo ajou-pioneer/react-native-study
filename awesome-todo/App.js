@@ -72,6 +72,38 @@ export default class App extends React.Component {
     })
   }
 
+  uncompleteTodo = (id) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            isCompleted: false,
+          }
+        }
+      }
+      return { ...newState };
+    });
+  }
+
+  completeTodo = (id) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            isCompleted: true,
+          }
+        }
+      }
+      return { ...newState };
+    });
+  }
+
   componentDidMount = () => {
     this.loadTodo();
   }
@@ -90,7 +122,7 @@ export default class App extends React.Component {
         <View style={styles.card}>
           <TextInput style={styles.input} placeholder={'New Todo'} value={newTodo} onChangeText={this.handleNewTodo} returnKeyType={'done'} onSubmitEditing={this.addTodo} />
           <ScrollView contentContainerStyle={styles.todo}>
-            {Object.values(todos).map((todo) => <ToDo key={todo.id} {...todo} deleteTodo={this.deleteTodo}/>)}
+            {Object.values(todos).map((todo) => <ToDo key={todo.id} {...todo} deleteTodo={this.deleteTodo} uncompleteTodo={this.uncompleteTodo} completeTodo={this.completeTodo} {...todo} />)}
           </ScrollView>
         </View>
       </View>
