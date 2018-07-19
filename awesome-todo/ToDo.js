@@ -29,13 +29,13 @@ export default class ToDo extends React.Component {
     } else {
       completeTodo(id);
     }
-  }
+  };
 
   startEditing = () => {
     this.setState({
       isEditing: true,
     });
-  }
+  };
 
   finishEditing = () => {
     const {todoValue} = this.state;
@@ -45,13 +45,13 @@ export default class ToDo extends React.Component {
     this.setState({
       isEditing: false,
     });
-  }
+  };
 
   controllInput = (text) => {
     this.setState({
       todoValue: text,
     });
-  }
+  };
 
   render() {
     const { isEditing, todoValue } = this.state;
@@ -102,7 +102,7 @@ export default class ToDo extends React.Component {
           )}
       </View>
     );
-  }
+  };
 }
 
 const styles = StyleSheet.create({
